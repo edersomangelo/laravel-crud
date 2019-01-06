@@ -18,3 +18,15 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::group(['middleware'=>'auth'], function() {
+    Route::resource('employees', 'EmployeesController');
+    Route::post('employees/table', ['as' => 'employees.table', 'uses' => 'EmployeesController@tableNew']);
+    Route::post('employees/{id}/update',['uses'=>'EmployeesController@update']);
+});
+
+Route::group(['middleware'=>['is_admin','auth']], function() {
+    Route::resource('companies','CompaniesController');
+    Route::post('companies/table', ['as' => 'companies.table', 'uses' => 'CompaniesController@tableNew']);
+    Route::post('companies/{id}/update',['uses'=>'CompaniesController@update']);
+});
