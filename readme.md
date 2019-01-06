@@ -23,19 +23,19 @@
 I will not ilustrate how run or configure the web server  
 All the following steps must be executed on the project main directory  
 
-#####1. Installing project dependencies
+##### 1. Installing project dependencies
     composer install
     npm install
-#####2.Configuring the application
+##### 2.Configuring the application
     cp .env.example .env
     php artisan key:generate
     php artisan storage:link
 >Configure the data base on the .env file
 
-#####3. Give write permission to the user that you are using to run your web server
+##### 3. Give write permission to the user that you are using to run your web server
     chown www-data storage -R
     chown www-data bootstrap/cache
-#####4. Setting up the database
+##### 4. Setting up the database
     php artisan migrate
     php artisan db:seed --class=DevelopmentSeeder
 #####Have fun
