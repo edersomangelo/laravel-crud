@@ -38,7 +38,7 @@ All the following steps must be executed on the project main directory
 ##### 4. Setting up the database
     php artisan migrate
     php artisan db:seed --class=DevelopmentSeeder
-#####Have fun
+##### Have fun
 
 ##
 https://laravel.com/docs/5.5
