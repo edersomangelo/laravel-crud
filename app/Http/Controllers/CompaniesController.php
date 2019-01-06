@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Companies;
 use App\Http\Requests\CompaniesRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -116,14 +117,9 @@ class CompaniesController extends Controller
         $model = Companies::select()
             ->get();
 
-        return DataTables::of($model)
+        return DataTables::of($model)->with('employees')
             ->addColumn('logo', function($model){
-                $logo = ($model->logo == null) ? asset('img/avatar.png') : $model->logo;
-                return '<img class="img-circle table-foto" src="'.$logo.'">';
-            })
-            ->addColumn('logo', function($model){
-                $logo = ($model->logo == null) ? asset('img/avatar.png') : $model->logo;
-                return '<img class="img-circle table-foto" src="'.$logo.'">';
+                return '<img class="table-foto" width=100 src="'.asset('storage/'.$model->logo).'">';
             })
             ->addColumn('created_at', function($model){
                 return $model->created_at == null ? '-' : Carbon::parse($model->created_at)->format('d/m/Y');
@@ -135,6 +131,10 @@ class CompaniesController extends Controller
                 return '<a href="'.url("/companies/{$model->id}/edit").'" style="font-size: 18px"><i class="fa fa-edit"></i></a>';
             })
             ->addColumn('delete', function($model) {
+                if ($model->employees->count() > 0){
+                    return "<small>Can not be deleted</small>";
+                }
+//                if($model->employees)
                 return '<a onclick="delete_company(this.dataset.company_id)" data-company_id="' . $model->id . '" style="color: red;font-size: 18px; cursor: pointer"><i class="fa fa-close"></i></a>';
             })
             ->rawColumns(['logo', 'created_at','delete', 'edit','view'])

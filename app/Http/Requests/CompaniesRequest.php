@@ -25,7 +25,7 @@ class CompaniesRequest extends FormRequest
     {
         $return = [
             'name'=>'required|min:2',
-            'email' => 'email',
+            'email' => 'required|email|min:10',
             'website'=>[function($attribute, $value, $fail){
                 if (!preg_match(
                     '/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/',

@@ -35,7 +35,6 @@
                     <span class="help-block">{{$errors->first('logo')}}</span>
                 @endif
             </div>
-            <input type="hidden" name="logo" value="teste">
             <div class="col-md-12">
                 <button class="btn btn-primary" style="margin-top: 5px;float: right">Save</button>
             </div>
