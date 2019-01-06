@@ -30,6 +30,9 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function getFullname() {
+        return "{$this->name} {$this->lastname}";
+    }
     /**
      * Check if the user is admin
      *
