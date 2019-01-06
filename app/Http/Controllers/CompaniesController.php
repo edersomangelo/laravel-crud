@@ -7,6 +7,7 @@ use App\Http\Requests\CompaniesRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 use Yajra\DataTables\DataTables;
 
 class CompaniesController extends Controller
@@ -40,11 +41,16 @@ class CompaniesController extends Controller
     public function store(CompaniesRequest $request)
     {
         $data = $request->all();
-        $filename = $this->saveUploadedLogo($request);
-        $data['logo'] = $filename;
+
+        // proccess file upload before save
+        $data['logo'] = $this->processUploadedLogo($request->file('logo'),$request->post('name'));
 
         $model = Companies::create($data);
-        return redirect(url('/companies/'.$model->id));
+
+        return redirect(url('/companies/'.$model->id))->with([
+            'message'=> 'The company record was successfully saved',
+            'message-type' => 'success'
+        ]);
     }
 
     /**
@@ -79,14 +85,19 @@ class CompaniesController extends Controller
     public function update(CompaniesRequest $request, $id)
     {
         $data = $request->all();
-        if (empty($request->file('logo'))) {
-            unset($data['logo']);
-        }else{
-            $data['logo'] = $this->saveUploadedLogo($request);
+        unset($data['logo']);
+
+        // if file exists then proccess file upload before save
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $this->processUploadedLogo($request->file('logo'),$request->post('name'));
         }
 
         $this->getCompany($id)->update($data);
-        return redirect(url('/companies/'.$id));
+
+        return redirect(url('/companies/'.$id))->with([
+            'message'=> 'The company record was successfully updated',
+            'message-type' => 'success'
+        ]);
     }
 
     /**
@@ -138,20 +149,38 @@ class CompaniesController extends Controller
         $model = Companies::find($id);
         if(empty($model))
             return redirect(url('/companies'));
+
         return $model;
     }
 
+    public function processUploadedLogo(\Illuminate\Http\UploadedFile $file, $prefixFilename){
+        $filename = $this->generateLogoFilename($file->getClientOriginalName(),$prefixFilename);
+
+        $this->saveUploadedLogo($file,$filename);
+
+        return $filename;
+    }
     /**
-     * @param CompaniesRequest $request
+     * @param \Illuminate\Http\UploadedFile $file
+     * @param string $filename
+     * @return bool
+     */
+    private function saveUploadedLogo(\Illuminate\Http\UploadedFile $file, string $filename){
+        if(!Storage::disk('localPicture')->put($filename,File::get($file)))
+            throw new UploadException('Was no possible to save the logo file');
+
+        return true;
+    }
+
+    /**
+     * @param string $originalFileName
+     * @param string $prefixName
      * @return string
      */
-    private function saveUploadedLogo(CompaniesRequest $request){
-        $file = $request->file('logo');
-        $ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
-        $companyName = preg_replace('/[^\w\s]/','',$request->post('name'));
-        $filename= strtolower($companyName).'-'.time().'.'.$ext;
+    private function generateLogoFilename(string $originalFileName,string $prefixName){
+        $ext = pathinfo($originalFileName, PATHINFO_EXTENSION);
+        $prefix = preg_replace('/[^\w\s]/','',$prefixName);
 
-        Storage::disk('localPicture')->put($filename,File::get($file));
-        return $filename;
+        return  strtolower($prefix).'-'.time().'.'.$ext;
     }
 }

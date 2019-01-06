@@ -95,7 +95,12 @@
 
         <!-- Main content -->
         <section class="content container-fluid" id="app">
-
+            @if(Session::has('message'))
+                <div class="alert alert-dismissible alert-{{Session::get('message-type')}}">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    {{Session::get('message')}}
+                </div>
+            @endif
             @yield('content')
 
         </section>
