@@ -12,34 +12,25 @@
         <th width="50">Delete</th>
     </tr>
     </thead>
+    <tbody>
+    @foreach($data as $row)
+        <tr>
+            <td>{{ $row->name }}</td>
+            <td>{{ $row->lastname }}</td>
+            <td>{{ $row->email }}</td>
+            <td>{{ $row->phone }}</td>
+            <td>{{ $row->company->name }}</td>
+            <td>{{  \Carbon\Carbon::parse($row->created_at)->format('d/m/Y') }}</td>
+            <td><a href="{{ url("/employees/{$row->id}") }}" style="font-size: 18px"><i class="fa fa-eye"></i></a></td>
+            <td><a href="{{ url("/employees/{$row->id}/edit") }}" style="font-size: 18px"><i class="fa fa-edit"></i></a></td>
+            <td><a onclick="delete_employee(this.dataset.employee_id)" data-employee_id="{{ $row->id }}" style="color: red;font-size: 18px; cursor: pointer"><i class="fa fa-close"></i></a></td>
+        </tr>
+    @endforeach
+    </tbody>
 </table>
+{!! $data->links() !!}
 @section('scripts-footer')
 <script>
-    $(document).ready(function() {
-        $('#service-table').DataTable({
-            serverSide: true,
-            dom: 'Bfrtip',
-            ajax: {
-                "url": '{!! route('employees.table') !!}',
-                "type": "POST",
-                "headers": {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            },
-            columns: [
-                { data: 'name', name: 'name' },
-                { data: 'lastname', name: 'name' },
-                { data: 'email', name: 'email', orderable: false},
-                { data: 'phone', name: 'phone' },
-                { data: 'company_name', name: 'company_name'},
-                { data: 'created_at', name: 'created_at' },
-                { data: 'view', name: 'view', orderable: false},
-                { data: 'edit', name: 'edit', orderable: false},
-                { data: 'delete', name: 'delete', orderable: false}
-            ]
-        });
-    } );
-
     function delete_employee(id) {
         if (confirm('Really delete?')) {
             $.ajax({

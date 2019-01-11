@@ -20,7 +20,8 @@ class CompaniesController extends Controller
      */
     public function index()
     {
-        return view('companies.index');
+        $data = Companies::paginate(10);
+        return view('companies.index',['data'=>$data]);
     }
 
     /**
@@ -110,35 +111,6 @@ class CompaniesController extends Controller
     public function destroy($id)
     {
         return Companies::destroy($id);
-    }
-
-    public function tableNew()
-    {
-        $model = Companies::select()
-            ->get();
-
-        return DataTables::of($model)->with('employees')
-            ->addColumn('logo', function($model){
-                return '<img class="table-foto" width=100 src="'.asset('storage/'.$model->logo).'">';
-            })
-            ->addColumn('created_at', function($model){
-                return $model->created_at == null ? '-' : Carbon::parse($model->created_at)->format('d/m/Y');
-            })
-            ->addColumn('view', function($model) {
-                return '<a href="'.url("/companies/{$model->id}").'" style="font-size: 18px"><i class="fa fa-eye"></i></a>';
-            })
-            ->addColumn('edit', function($model) {
-                return '<a href="'.url("/companies/{$model->id}/edit").'" style="font-size: 18px"><i class="fa fa-edit"></i></a>';
-            })
-            ->addColumn('delete', function($model) {
-                if ($model->employees->count() > 0){
-                    return "<small>Can not be deleted</small>";
-                }
-//                if($model->employees)
-                return '<a onclick="delete_company(this.dataset.company_id)" data-company_id="' . $model->id . '" style="color: red;font-size: 18px; cursor: pointer"><i class="fa fa-close"></i></a>';
-            })
-            ->rawColumns(['logo', 'created_at','delete', 'edit','view'])
-            ->make(true);
     }
 
     /**
