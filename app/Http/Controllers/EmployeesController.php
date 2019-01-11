@@ -17,7 +17,8 @@ class EmployeesController extends Controller
      */
     public function index()
     {
-        return view('employees.index');
+        $data = Employees::paginate(10);
+        return view('employees.index',compact('data'));
     }
 
     /**
@@ -101,32 +102,6 @@ class EmployeesController extends Controller
     public function destroy($id)
     {
         Employees::destroy($id);
-    }
-
-    public function tableNew()
-    {
-        $model = Employees::with('company')
-            ->select()
-            ->get();
-
-        return DataTables::of($model)
-            ->addColumn('company_name', function ($model){
-                return $model->company->name;
-            })
-            ->addColumn('created_at', function($model){
-                return $model->created_at == null ? '-' : Carbon::parse($model->created_at)->format('d/m/Y');
-            })
-            ->addColumn('view', function($model) {
-                return '<a href="'.url("/employees/{$model->id}").'" style="font-size: 18px"><i class="fa fa-eye"></i></a>';
-            })
-            ->addColumn('edit', function($model) {
-                return '<a href="'.url("/employees/{$model->id}/edit").'" style="font-size: 18px"><i class="fa fa-edit"></i></a>';
-            })
-            ->addColumn('delete', function($model) {
-                return '<a onclick="delete_employee(this.dataset.employee_id)" data-employee_id="' . $model->id . '" style="color: red;font-size: 18px; cursor: pointer"><i class="fa fa-close"></i></a>';
-            })
-            ->rawColumns(['created_at','delete', 'edit','view'])
-            ->make(true);
     }
 
     private function getEmployee($id){
