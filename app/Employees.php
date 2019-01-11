@@ -13,6 +13,8 @@ class Employees extends Model
         'company_id',
         'email',
     ];
+    protected $dates = ['created_at'];
+
     /**
      * Get the company record associated with the employee.
      */
