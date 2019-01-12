@@ -39,7 +39,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(result) {
-                    $('#service-table').DataTable().ajax.reload( null, false);
+                    location.reload();
                 }
             });
         }

@@ -20,7 +20,7 @@ class CompaniesController extends Controller
      */
     public function index()
     {
-        $data = Companies::paginate(10);
+        $data = Companies::sortable()->paginate(10);
         return view('companies.index',['data'=>$data]);
     }
 

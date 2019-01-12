@@ -1,12 +1,12 @@
 <table class="table table-bordered text-center" id="service-table">
     <thead>
     <tr>
-        <th>Name</th>
-        <th>Lastname</th>
-        <th>Email</th>
-        <th>Phone</th>
+        <th>@sortablelink('name','Name')</th>
+        <th>@sortablelink('lastname','Lastname')</th>
+        <th>@sortablelink('email','Email')</th>
+        <th>@sortablelink('phone','Phone')</th>
         <th>Company</th>
-        <th>Created at</th>
+        <th>@sortablelink('created_at','Created at')</th>
         <th width="50">View</th>
         <th width="50">Edit</th>
         <th width="50">Delete</th>
@@ -28,7 +28,9 @@
     @endforeach
     </tbody>
 </table>
+
 {!! $data->links() !!}
+
 @section('scripts-footer')
 <script>
     function delete_employee(id) {
@@ -40,7 +42,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(result) {
-                    $('#service-table').DataTable().ajax.reload( null, false);
+                    location.reload();
                 }
             });
         }

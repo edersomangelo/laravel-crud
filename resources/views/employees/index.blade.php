@@ -4,7 +4,7 @@
 @endsection
 
 @section('title')
-    Companies list
+    Employees list
 @endsection
 
 @section('content')
